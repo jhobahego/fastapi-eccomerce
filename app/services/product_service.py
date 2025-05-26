@@ -69,6 +69,17 @@ class ProductService(
             active_only=active_only,
         )
 
+    def get_product_with_category(
+        self, product_id: int, raise_404: bool = True
+    ) -> Optional[Product]:
+        """Obtener producto con información de categoría"""
+        product = self.repository.get_with_category(db=self.db, product_id=product_id)
+
+        if not product and raise_404:
+            self._raise_not_found_error("Product not found")
+
+        return product
+
     def search_products(
         self,
         search_params: ProductSearch,

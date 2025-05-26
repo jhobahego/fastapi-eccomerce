@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, ValidationInfo
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from decimal import Decimal
@@ -37,8 +37,12 @@ class ProductCreate(ProductBase):
 
     @field_validator("sale_price")
     @classmethod
-    def validate_sale_price(cls, v, values):
-        if v is not None and "price" in values and v >= values["price"]:
+    def validate_sale_price(cls, v, info: ValidationInfo):
+        if (
+            v is not None
+            and info.data.get("price") is not None
+            and v >= info.data["price"]
+        ):
             raise ValueError("Sale price must be less than regular price")
         return v
 
