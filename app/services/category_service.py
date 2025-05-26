@@ -5,6 +5,7 @@ from .base import BaseService
 from ..models.category import Category
 from ..schemas.category import CategoryCreate, CategoryUpdate
 from ..repositories.category_repository import CategoryRepository
+from ..utils.db_utils import db_retry
 
 
 class CategoryService(
@@ -14,34 +15,47 @@ class CategoryService(
         repository = CategoryRepository(Category)
         super().__init__(db, repository)
 
+    @db_retry(max_retries=3, delay=1.0)
     def create_category(self, category_create: CategoryCreate) -> Category:
         """Crear nueva categoría con validaciones específicas"""
         # Validar que el nombre sea único
-        self.validate_unique_field(
-            field_name="name",
-            field_value=category_create.name,
-            error_message="Category name already exists",
+        existing_name = self.repository.get_by_name(
+            db=self.db, name=category_create.name
         )
+        if existing_name:
+            self._raise_bad_request_error("Category name already exists")
 
         # Validar que el slug sea único
-        self.validate_unique_field(
-            field_name="slug",
-            field_value=category_create.slug,
-            error_message="Category slug already exists",
+        existing_slug = self.repository.get_by_slug(
+            db=self.db, slug=category_create.slug
         )
+        if existing_slug:
+            self._raise_bad_request_error("Category slug already exists")
 
         # Validar que la categoría padre existe si se especifica
         if category_create.parent_id:
-            parent_category = self.validate_exists(
-                category_create.parent_id, "Parent category not found"
+            parent_category = self.repository.get_simple(
+                db=self.db, id=category_create.parent_id
             )
+            if not parent_category:
+                self._raise_bad_request_error("Parent category not found")
 
-            # Validar que la categoría padre esté activa
-            self.validate_active_status(
-                parent_category, error_message="Parent category is not active"
-            )
+            if parent_category and not parent_category.is_active:
+                self._raise_bad_request_error("Parent category is not active")
 
-        return self.create(obj_in=category_create)
+        # Crear categoría sin cargar relaciones
+        return self.repository.create_simple(db=self.db, obj_in=category_create)
+
+    def get_category_by_id(
+        self, category_id: int, raise_404: bool = True
+    ) -> Optional[Category]:
+        """Obtener categoría por ID"""
+        category = self.repository.get(db=self.db, id=category_id)
+
+        if not category and raise_404:
+            self._raise_not_found_error("Category not found")
+
+        return category
 
     def get_category_by_name(
         self, name: str, raise_404: bool = True

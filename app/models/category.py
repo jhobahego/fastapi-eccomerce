@@ -27,8 +27,11 @@ class Category(Base):
     )
 
     # Self-referential relationship for subcategories
-    parent = relationship("Category", remote_side=[id], back_populates="children")
-    children = relationship("Category", back_populates="parent")
+    # lazy='select' evita carga automática y previene recursión
+    parent = relationship(
+        "Category", remote_side=[id], back_populates="children", lazy="select"
+    )
+    children = relationship("Category", back_populates="parent", lazy="select")
 
     # Relationship with products
     products = relationship("Product", back_populates="category")

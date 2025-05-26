@@ -41,9 +41,25 @@ class CategoryInDBBase(CategoryBase):
         from_attributes = True
 
 
+# Esquema básico de categoría sin relaciones circulares
 class Category(CategoryInDBBase):
-    children: List["Category"] = []
+    pass
+
+
+# Esquema para categoría con información del padre (sin hijos)
+class CategoryWithParent(CategoryInDBBase):
     parent: Optional["Category"] = None
+
+
+# Esquema para categoría con hijos (sin padre)
+class CategoryWithChildren(CategoryInDBBase):
+    children: List["Category"] = []
+
+
+# Esquema para jerarquía completa (usado en endpoints específicos)
+class CategoryHierarchy(CategoryInDBBase):
+    children: List["CategoryHierarchy"] = []
+    depth: int = 0
 
 
 class CategoryWithProducts(Category):
@@ -51,4 +67,6 @@ class CategoryWithProducts(Category):
 
 
 # Para evitar referencias circulares
-Category.model_rebuild()
+CategoryWithParent.model_rebuild()
+CategoryWithChildren.model_rebuild()
+CategoryHierarchy.model_rebuild()
