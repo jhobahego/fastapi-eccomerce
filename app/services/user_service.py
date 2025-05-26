@@ -33,6 +33,17 @@ class UserService(BaseService[User, UserCreate, UserUpdate, UserRepository]):
         # Crear usuario usando el repositorio específico que maneja el hash de password
         return self.repository.create(db=self.db, obj_in=user_create)
 
+    def get_user_by_id(self, user_id: int, raise_404: bool = True) -> Optional[User]:
+        """Obtener usuario por ID"""
+        user = self.repository.get(db=self.db, id=user_id)
+
+        if not user and raise_404:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
+
+        return user
+
     def get_user_by_email(self, email: str, raise_404: bool = True) -> Optional[User]:
         """Obtener usuario por email"""
         user = self.repository.get_by_email(db=self.db, email=email)
