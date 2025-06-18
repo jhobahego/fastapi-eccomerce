@@ -49,13 +49,14 @@ Se recomienda utilizar un entorno virtual para gestionar las dependencias.
     ```
 
 4.  **Configurar las variables de entorno:**
-    Crea un archivo `.env` en la raíz del proyecto a partir del archivo `.env.example` (si existe) o basándote en la configuración requerida en `app/config.py`. Como mínimo, necesitarás configurar la URL de la base de datos (`DATABASE_URL`).
+    Crea un archivo `.env` en la raíz del proyecto a partir del archivo `.env.example` (si existe) o basándote en la configuración requerida en `app/config.py`. Como mínimo, necesitarás configurar la URL de la base de datos (`DATABASE_URL`) y el email del administrador (`ADMIN_EMAIL`).
     Ejemplo de contenido para `.env`:
     ```env
     DATABASE_URL=postgresql://user:password@host:port/database_name
     SECRET_KEY=tu_super_secreto_key
     ALGORITHM=HS256
     ACCESS_TOKEN_EXPIRE_MINUTES=30
+    ADMIN_EMAIL=admin@example.com
     ```
 
 5.  **Ejecutar las migraciones de la base de datos (Alembic):**
@@ -77,6 +78,30 @@ Se recomienda utilizar un entorno virtual para gestionar las dependencias.
 
     Y a la documentación alternativa (ReDoc):
     [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+## Scripts de utilidad
+
+El proyecto incluye scripts de utilidad en el directorio `app/utils/`. Para ejecutar estos scripts, asegúrate de tener el entorno virtual activado.
+
+### Crear tablas en la base de datos
+El script `app/utils/create_tables.py` crea todas las tablas definidas en los modelos de SQLAlchemy.
+**Nota:** Este proyecto usa Alembic para gestionar las migraciones de la base de datos. Deberías usar `alembic upgrade head` como método principal para mantener el esquema de tu base de datos actualizado. Este script puede ser útil para configuraciones iniciales o entornos de prueba.
+
+Para ejecutarlo:
+```bash
+python app/utils/create_tables.py
+```
+
+### Convertir un usuario en superusuario
+El script `app/utils/make_superuser.py` asigna permisos de superusuario a un usuario existente.
+
+**Pasos:**
+1.  Asegúrate de que el usuario ya esté registrado en la aplicación.
+2.  Establece la variable de entorno `ADMIN_EMAIL` en tu archivo `.env` con el correo del usuario.
+3.  Ejecuta el script:
+    ```bash
+    python app/utils/make_superuser.py
+    ```
 
 ## Estructura del Proyecto (resumen)
 
