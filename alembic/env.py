@@ -11,11 +11,7 @@ from app.database import Base
 from app.config import settings
 
 # Importación de modelos aquí para que Base los conozca
-from app.models.user import User  # noqa: F401
-from app.models.product import Product  # noqa: F401
-from app.models.category import Category  # noqa: F401
-from app.models.cart import Cart, CartItem  # noqa: F401
-from app.models.order import Order, OrderItem  # noqa: F401
+from app.models import user, product, category, order, cart  # noqa: F401
 
 
 # this is the Alembic Config object, which provides
