@@ -49,7 +49,7 @@ Se recomienda utilizar un entorno virtual para gestionar las dependencias.
     ```
 
 4.  **Configurar las variables de entorno:**
-    Crea un archivo `.env` en la raíz del proyecto basándote en la configuración requerida en `app/config.py`. Como mínimo, necesitarás configurar:
+    Crea un archivo `.env` en la raíz del proyecto basándote en la configuración requerida en `app/config.py`. (Toma el archivo `.env.example` como guia). Como mínimo, necesitarás configurar las siguientes:
     ```env
     DATABASE_URL=postgresql://user:password@host:port/database_name
     SECRET_KEY=tu_super_secreto_key
