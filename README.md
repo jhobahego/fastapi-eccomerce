@@ -2,6 +2,27 @@
 
 Este proyecto es el backend de una aplicación de comercio electrónico desarrollado utilizando el framework FastAPI en Python.
 
+## 🚀 Inicio Rápido (Recomendado)
+
+**¿Primera vez usando este proyecto?** Sigue nuestra guía de inicio rápido multiplataforma:
+
+### Para cualquier sistema operativo:
+```bash
+# Clonar e inicializar con Python (funciona en Windows, macOS y Linux)
+git clone <tu-repositorio>
+cd backend-fastapi
+python scripts/init-project.py
+```
+
+### Alternativas por sistema operativo:
+- **Linux/macOS**: `make init` o `./scripts/init-project.sh`
+- **Windows PowerShell**: `.\scripts\init-project.ps1`
+- **Windows CMD**: `.\scripts\init-project.bat`
+
+📖 **Guía completa**: Ver [SETUP.md](SETUP.md) para instrucciones detalladas.
+
+---
+
 ## Descripción
 
 El backend proporciona una API RESTful para gestionar diversas funcionalidades de una tienda en línea, incluyendo:

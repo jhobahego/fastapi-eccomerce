@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ecommerce_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ecommerce-network
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6380:6379" # Cambiar puerto externo a 6380
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - ecommerce-network
+
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-ecommerce_db}
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - uploads_data:/app/uploads
+    networks:
+      - ecommerce-network
+    command: >
+      sh -c "
+        echo 'Esperando a que la base de datos esté lista...' &&
+        python -c 'import time; time.sleep(5)' &&
+        echo 'Ejecutando migraciones...' &&
+        alembic upgrade head &&
+        echo 'Poblando base de datos inicial...' &&
+        python -m app.utils.seed_database &&
+        echo 'Iniciando servidor...' &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:
+
+
+networks:
+  ecommerce-network:
+    driver: bridge

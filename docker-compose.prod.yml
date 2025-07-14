@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+    command: >
+      sh -c "
+        echo 'Ejecutando migraciones...' &&
+        alembic upgrade head &&
+        echo 'Iniciando servidor en modo producción...' &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+      "
+    volumes:
+      - uploads_data:/app/uploads # Solo mantenemos el volumen de uploads, no el código fuente
+
+  db:
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ecommerce_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Sin valor por defecto en producción
