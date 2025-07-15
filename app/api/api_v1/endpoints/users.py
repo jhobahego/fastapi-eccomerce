@@ -37,13 +37,14 @@ def create_user(
     Create new user (admin only).
     """
     user_service = UserService(db)
-    user = user_service.get_user_by_email(user_in.email)
-    if user:
+    # Check if user exists by email first
+    existing_user = user_service.get_user_by_email(user_in.email, raise_404=False)
+    if existing_user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists in the system.",
         )
-    user = user_service.create(obj_in=user_in)
+    user = user_service.create_user(user_in)  # Changed from create to create_user
     return user
 
 
@@ -111,4 +112,25 @@ def update_user(
             detail="The user with this id does not exist in the system",
         )
     user = user_service.update(id=user_id, obj_in=user_in)
+    return user
+
+
+@router.delete("/{user_id}", response_model=UserSchema)
+def delete_user(
+    *,
+    db: Session = Depends(get_db),
+    user_id: int,
+    current_user: User = Depends(get_current_superuser),
+) -> Any:
+    """
+    Delete a user (admin only).
+    """
+    user_service = UserService(db)
+    user = user_service.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this id does not exist in the system",
+        )
+    user = user_service.delete(id=user_id)
     return user

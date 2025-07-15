@@ -1,0 +1,29 @@
+services:
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: ecommerce-postgres-test
+    environment:
+      POSTGRES_DB: ecommerce_test
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432" # Puerto diferente para no conflictar con tu BD principal
+    volumes:
+      # Base de datos en memoria para velocidad
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+        tmpfs:
+          size: 512M
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U test_user -d ecommerce_test" ]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge

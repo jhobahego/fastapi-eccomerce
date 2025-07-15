@@ -60,3 +60,6 @@ class Product(Base):
     def is_low_stock(self) -> bool:
         """Verifica si el stock está bajo"""
         return self.stock_quantity <= self.min_stock_level
+
+    def __str__(self) -> str:
+        return self.name

@@ -47,7 +47,7 @@ def create_product(
     Create new product (admin only).
     """
     product_service = ProductService(db)
-    product = product_service.create(obj_in=product_in)
+    product = product_service.create_product(product_in)
     return product
 
 
@@ -161,7 +161,7 @@ def update_product(
     product = product_service.get_by_id(id=product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    product = product_service.update(id=product_id, obj_in=product_in)
+    product = product_service.update_product(product_id, product_in)
     return product
 
 
@@ -199,16 +199,14 @@ def update_product_stock(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    success = product_service.update_stock(
+    updated_product = product_service.update_stock(
         product_id=product_id,
         stock_update=stock_update,
     )
 
-    if not success:
+    if not updated_product:
         raise HTTPException(status_code=400, detail="Failed to update stock")
 
-    # Return updated product
-    updated_product = product_service.get_by_id(id=product_id)
     return updated_product
 
 
@@ -226,3 +224,52 @@ def get_similar_products(
     # products = product_service.get_similar_products(product_id, limit=limit)
     # return products
     pass
+
+
+@router.get("/slug/{slug}", response_model=ProductWithCategory)
+def get_product_by_slug(
+    *,
+    db: Session = Depends(get_db),
+    slug: str,
+) -> Any:
+    """
+    Get product by slug with category information.
+    """
+    product_service = ProductService(db)
+    product = product_service.get_product_by_slug(slug)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@router.get("/sku/{sku}", response_model=ProductWithCategory)
+def get_product_by_sku(
+    *,
+    db: Session = Depends(get_db),
+    sku: str,
+) -> Any:
+    """
+    Get product by SKU with category information.
+    """
+    product_service = ProductService(db)
+    product = product_service.get_product_by_sku(sku)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@router.post("/search", response_model=List[ProductSchema])
+def search_products_post(
+    *,
+    db: Session = Depends(get_db),
+    search_data: dict,
+    skip: int = 0,
+    limit: int = 100,
+) -> Any:
+    """
+    Search products with filters using POST method.
+    """
+    product_service = ProductService(db)
+    search_params = ProductSearch(**search_data)
+    products = product_service.search_products(search_params, skip=skip, limit=limit)
+    return products

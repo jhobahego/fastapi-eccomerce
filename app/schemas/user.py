@@ -43,6 +43,8 @@ class UserUpdate(BaseModel):
     city: Optional[str] = None
     country: Optional[str] = None
     postal_code: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_superuser: Optional[bool] = None
 
 
 class UserInDBBase(UserBase):

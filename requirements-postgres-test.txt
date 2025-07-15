@@ -1,0 +1,17 @@
+# Dependencias específicas para testing con PostgreSQL
+# Estas dependencias se instalan además de requirements.txt
+
+# PostgreSQL adapter
+psycopg2-binary==2.9.9
+
+# Testing frameworks (ya incluidos en requirements-test.txt pero listados para claridad)
+pytest==8.3.3
+pytest-asyncio==0.23.8
+pytest-cov==6.0.0
+
+# Test data generation
+factory-boy==3.3.1
+faker==30.8.2
+
+# Para manejo de variables de entorno en tests
+python-dotenv==1.0.1

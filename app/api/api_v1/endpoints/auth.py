@@ -31,15 +31,15 @@ def register(
     """
     user_service = UserService(db)
 
-    # Check if user already exists
-    user = user_service.get_user_by_email(user_in.email)
+    # Check if user already exists - use raise_404=False to avoid exception
+    user = user_service.get_user_by_email(user_in.email, raise_404=False)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists in the system.",
         )
 
-    user = user_service.create(obj_in=user_in)
+    user = user_service.create_user(user_in)
     return user
 
 

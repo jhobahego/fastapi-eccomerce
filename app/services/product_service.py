@@ -82,11 +82,20 @@ class ProductService(
 
     def search_products(
         self,
-        search_params: ProductSearch,
+        search_params: Optional[ProductSearch] = None,
         skip: int = 0,
         limit: int = 100,
+        query: Optional[str] = None,  # Support for simple query parameter
+        **kwargs,
     ) -> List[Product]:
         """Buscar productos con filtros avanzados"""
+        # Support both ProductSearch object and simple query string
+        if query is not None and search_params is None:
+            # Create a simple search with the query
+            search_params = ProductSearch(query=query)
+        elif search_params is None:
+            search_params = ProductSearch()
+
         return self.repository.search(
             db=self.db,
             search_params=search_params,

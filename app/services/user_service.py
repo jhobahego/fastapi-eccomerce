@@ -166,3 +166,11 @@ class UserService(BaseService[User, UserCreate, UserUpdate, UserRepository]):
         db_user = self.validate_exists(user_id, "User not found")
 
         return self.repository.activate(db=self.db, user=db_user)
+
+    def get_by_email(self, email: str) -> Optional[User]:
+        """Get user by email - alias for get_user_by_email with raise_404=False"""
+        return self.get_user_by_email(email, raise_404=False)
+
+    def get_by_username(self, username: str) -> Optional[User]:
+        """Get user by username - alias for get_user_by_username with raise_404=False"""
+        return self.get_user_by_username(username, raise_404=False)

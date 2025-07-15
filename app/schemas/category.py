@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from datetime import datetime
 
@@ -15,10 +15,40 @@ class CategoryBase(BaseModel):
 class CategoryCreate(CategoryBase):
     slug: str
 
-    @validator("name")
+    @field_validator("name")
+    @classmethod
     def validate_name(cls, v):
         if len(v) < 2:
             raise ValueError("Category name must be at least 2 characters long")
+        return v
+
+    @field_validator("is_active", mode="before")
+    @classmethod
+    def validate_is_active(cls, v):
+        if isinstance(v, str):
+            return v.lower() in ("true", "1", "yes", "on")
+        return bool(v)
+
+    @field_validator("sort_order", mode="before")
+    @classmethod
+    def validate_sort_order(cls, v):
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except ValueError:
+                raise ValueError("sort_order must be a valid integer")
+        return v
+
+    @field_validator("parent_id", mode="before")
+    @classmethod
+    def validate_parent_id(cls, v):
+        if v is None or v == "" or v == "null" or v == "None":
+            return None
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except ValueError:
+                raise ValueError("parent_id must be a valid integer or None")
         return v
 
 
@@ -29,6 +59,46 @@ class CategoryUpdate(BaseModel):
     parent_id: Optional[int] = None
     image_url: Optional[str] = None
     sort_order: Optional[int] = None
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v):
+        if v is not None and len(v) < 2:
+            raise ValueError("Category name must be at least 2 characters long")
+        return v
+
+    @field_validator("is_active", mode="before")
+    @classmethod
+    def validate_is_active(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, str):
+            return v.lower() in ("true", "1", "yes", "on")
+        return bool(v)
+
+    @field_validator("sort_order", mode="before")
+    @classmethod
+    def validate_sort_order(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except ValueError:
+                raise ValueError("sort_order must be a valid integer")
+        return v
+
+    @field_validator("parent_id", mode="before")
+    @classmethod
+    def validate_parent_id(cls, v):
+        if v is None or v == "" or v == "null" or v == "None":
+            return None
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except ValueError:
+                raise ValueError("parent_id must be a valid integer or None")
+        return v
 
 
 class CategoryInDBBase(CategoryBase):
