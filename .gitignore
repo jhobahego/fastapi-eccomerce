@@ -1,5 +1,57 @@
+# Entornos virtuales y dependencias
 venv/
-.env
+env/
+ENV/
+.venv/
 
+# Variables de entorno sensibles
+.env
+.env.local
+.env.production
+.env.staging
+
+# Archivos de Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Base de datos local
+*.db
+*.sqlite3
+test.db
+
+# Logs
+logs/
+*.log
+
+# IDEs
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales
+.tmp/
+temp/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Uploads de desarrollo
+uploads/
+!uploads/.gitkeep
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# pytest
+.pytest_cache/
+
+# Docker
+.dockerignore

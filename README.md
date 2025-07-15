@@ -219,6 +219,50 @@ make dev-safe                    # ✅ Solo se ejecuta si tests pasan
 
 ---
 
+## 🚀 Despliegue en Render
+
+Este proyecto está configurado para desplegarse fácilmente en [Render](https://render.com) usando Docker y PostgreSQL.
+
+### Configuración automática con render.yaml
+
+El archivo `render.yaml` contiene toda la configuración necesaria para el despliegue automático:
+
+1. **PostgreSQL Database**: Base de datos gratuita en Render
+2. **Web Service**: Aplicación FastAPI con Docker
+3. **Variables de entorno**: Configuración automática y manual
+
+### Pasos para desplegar:
+
+1. **Conectar repositorio a Render**:
+   - Ve a [render.com](https://render.com) y crea una cuenta
+   - Conecta tu cuenta de GitHub
+   - Selecciona este repositorio
+
+2. **Render detectará automáticamente el `render.yaml`**:
+   - Confirmará la creación de PostgreSQL database
+   - Creará el web service con configuración Docker
+
+3. **Configurar variables de entorno manualmente** en el dashboard de Render:
+   ```
+   ADMIN_EMAIL=tu_email@example.com
+   ADMIN_PASSWORD=tu_password_seguro
+   BACKEND_CORS_ORIGINS=["https://tu-frontend.vercel.app"]
+   ```
+
+4. **Variables automáticas** (Render las configura):
+   - `DATABASE_URL`: Conexión a PostgreSQL
+   - `SECRET_KEY`: Clave generada automáticamente
+   - `PORT`: Puerto dinámico de Render
+
+### URLs después del despliegue:
+- **API**: `https://tu-app.onrender.com`
+- **Documentación**: `https://tu-app.onrender.com/docs`
+- **API v1**: `https://tu-app.onrender.com/api/v1`
+
+📖 **Guía completa**: Ver `render.yaml` y `scripts/render-deploy.sh` para detalles técnicos.
+
+---
+
 ## Estructura del Proyecto
 
 ```

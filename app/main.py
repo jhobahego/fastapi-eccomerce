@@ -60,3 +60,20 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 def read_root():
     """Redirección a la documentación de la API"""
     return RedirectResponse(url="/docs")
+
+
+# Soporte para ejecución directa con puerto dinámico
+if __name__ == "__main__":
+    import os
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 8000))
+    workers = 1 if settings.ENVIRONMENT == "development" else 4
+
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=port,
+        workers=workers,
+        reload=settings.ENVIRONMENT == "development",
+    )
