@@ -11,6 +11,9 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str
+    POSTGRES_DB: str = "ecommerce_db"
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "postgres"
 
     # Security
     SECRET_KEY: str
