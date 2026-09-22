@@ -55,3 +55,20 @@ coverage.xml
 
 # Docker
 .dockerignore
+
+# rsc local state and generated target projections
+.rsc/
+
+# VS Code / GitHub Copilot generated RSC state
+.github/rsc/
+.github/agents/
+.github/prompts/
+
+# OpenCode generated RSC state and adapters
+.opencode/rsc/
+.opencode/agents/
+.opencode/commands/
+.opencode/plugins/
+
+# Antigravity generated RSC state
+.antigravity/rsc/
